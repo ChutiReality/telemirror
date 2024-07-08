@@ -1,6 +1,8 @@
 from typing import Tuple, Type
 
-from ..hints import EventMessage, EventLike
+from telethon import TelegramClient, types
+
+from ..hints import EventLike, EventMessage
 from .base import MessageFilter
 
 
@@ -36,4 +38,26 @@ class RestrictSavingContentBypassFilter(MessageFilter):
     async def _process_message(
         self, message: EventMessage, event_type: Type[EventLike]
     ) -> Tuple[bool, EventMessage]:
-        raise NotImplementedError
+        
+        if message.media is None or (
+            message.chat is None or not message.chat.noforwards
+        ):
+            # Forwarding allowed
+            return True, message
+        
+        client: TelegramClient = message.client
+        
+        # Handle images
+        if isinstance(message.media, types.MessageMediaPhoto):
+            photo: bytes = await client.download_media(message = message, file = bytes)
+            cloned_photo: types.TypeInputFile = await client.upload_file(photo)
+            cloned_photo.name = (
+                message.file.name if message.file.name else "photo.jpg"
+            )
+            message.media = cloned_photo
+        # Others media types set to None (remove from original message)...
+        else:
+            message.media = None
+
+        # Process message if not empty
+        return bool(message.media or message.message), message
