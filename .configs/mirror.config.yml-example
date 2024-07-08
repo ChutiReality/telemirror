@@ -9,6 +9,7 @@ filters:
         ? t.me
   - SkipUrlFilter:
       skip_mention: false
+  - RestrictSavingContentBypassFilter
 
 # (Optional) Global settings
 disable_edit: true
@@ -42,3 +43,4 @@ directions:
           keywords: !!set
             ? "stopword"
           regex: true # treat keywords as regex expr
+      - RestrictSavingContentBypassFilter
