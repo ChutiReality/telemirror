@@ -1,5 +1,7 @@
 # Telegram message forwarder (client API)
 
+Note: I'm not mind behind this repository, I just added the necessary code for this to support forwarding from non-forwarding channels. The original repository is https://github.com/khoben/telemirror
+
 ### Functionality
 - Live forwarding and updating messages
 - Source and target channels/chats/topics (one-to-one, many-to-one, many-to-many) mapping
